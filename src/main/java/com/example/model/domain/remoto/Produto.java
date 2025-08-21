@@ -19,7 +19,7 @@ public class Produto extends PanacheEntityBase {
     public String nome;
 
     @Column(name = "PC_TAXA_JUROS")
-    public Double taxaJuros;
+    public double taxaJuros;
 
     @Column(name = "NU_MINIMO_MESES")
     public Integer minimoMeses;

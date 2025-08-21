@@ -21,7 +21,7 @@ public class Parcela extends PanacheEntityBase {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "tipo_emprestimo_id")
+    @JoinColumn(name = "ID_TIPO_EMPRESTIMO")
     private TipoEmprestimo tipoEmprestimo;
 
     public Parcela(int numero, double valorPrestacao, double valorJuros, double valorAmortizado) {

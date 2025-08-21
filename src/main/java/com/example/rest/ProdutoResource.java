@@ -24,11 +24,5 @@ public class ProdutoResource {
     }
 
 
-    @POST
-    @Path("/simulacao")
-    public void teste(){
-        produtoService.test();
-    }
-
 
 }

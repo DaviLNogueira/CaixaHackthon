@@ -1,8 +1,12 @@
 package com.example.model.domain.local;
 
+import com.example.model.domain.remoto.Produto;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity @Getter
 @Table(name = "SIMULACAO")
@@ -14,19 +18,20 @@ public class Simulacao extends PanacheEntityBase {
     @Column(name = "ID_SIMULACAO")
     private Long idSimulacao;
 
-//    @ManyToOne
-//    @JoinColumn(
-//            name = "CODIGO_PRODUTO",
-//            foreignKey = @ForeignKey(name = "FK_SIMULACAO_PRODUTO")
-//    )
-//    private Produto produto;
-
     @Column(name = "CODIGO_PRODUTO")
     private int codigoProduto;
 
     @Column(name = "TAXA_JUROS")
     private double taxaJuros; // valor pode mudar
 
+    @OneToMany(mappedBy = "simulacao", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TipoEmprestimo> tipoEmprestimos = new ArrayList<>(); ;
+
+
+    public void addTipoEmprestimo(TipoEmprestimo tipoEmprestimo) {
+        tipoEmprestimo.setSimulacao(this);
+        this.tipoEmprestimos.add(tipoEmprestimo);
+    }
 
     public Simulacao(int codigoProduto, double taxaJuros) {
         this.codigoProduto = codigoProduto;

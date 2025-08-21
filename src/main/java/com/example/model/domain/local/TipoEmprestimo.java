@@ -17,32 +17,27 @@ public class TipoEmprestimo extends PanacheEntityBase {
     private String tipo;
 
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "tipo_emprestimo_id")
-    private List<Parcela> parcelas = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToMany(mappedBy = "tipoEmprestimo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Parcela> parcelas = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "ID_SIMULACAO",
-            foreignKey = @ForeignKey(name = "FK_TIPO_EMPRESTIMO_SIMULACAO")
-    )
+    @JoinColumn(name = "ID_SIMULACAO")
     private Simulacao simulacao;
 
-    
-
-    public TipoEmprestimo(String tipo, List<Parcela> parcelas) {
-        this.tipo = tipo;
-        this.parcelas = parcelas;
+    public void addParcela(Parcela parcela) {
+        parcela.setTipoEmprestimo(this);
+        this.parcelas.add(parcela);
     }
 
-    public TipoEmprestimo(String tipo,Simulacao simulacao) {
+    public TipoEmprestimo(String tipo) {
         this.tipo = tipo;
-        this.simulacao = simulacao;
     }
+
 
     public TipoEmprestimo() {
 

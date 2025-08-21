@@ -35,54 +35,59 @@ public class ProdutoService {
                         .and("valor", simulador.getValorDesejado())
         ).firstResult();
         List<TipoEmprestimo> tipos = new ArrayList<>();
-        tipos.add(calculadorModalidade(produto,simulador));
-        tipos.add(calcularSac(produto,simulador));
+        tipos.add(calcularPrice(produto, simulador));
+        tipos.add(calcularSac(produto, simulador));
 
-
-        return new RespostaPropostaDto(produto,tipos);
+        Simulacao simulacao = new Simulacao(produto.getId(), produto.getTaxaJuros());
+        simulacao.addTipoEmprestimo(calcularPrice(produto, simulador));
+        simulacao.addTipoEmprestimo(calcularSac(produto, simulador));
+        salvarSimulacao(simulacao);
+        return new RespostaPropostaDto(simulacao);
 
     }
 
-    public void test(){
-        Simulacao simulacao = new Simulacao(10,100);
-
+    public Simulacao salvarSimulacao(Simulacao simulacao) {
         simulacaoRepository.persist(simulacao);
-
-        TipoEmprestimo tipo = new TipoEmprestimo("SAC",simulacao);
-        tipo.setSimulacao(simulacao);
-        tipoEmprestimoRepository.persist(tipo);
-
-        Parcela parcela = new Parcela(1,100,10,10);
-        Parcela parcela1 = new Parcela(1,100,10,10);
-        parcela.setTipoEmprestimo(tipo);
-        parcela1.setTipoEmprestimo(tipo);
-        parcelaRepository.persist(parcela);
-        parcelaRepository.persist(parcela1);
+        return simulacao;
     }
 
+//    public void test(){
+//        Simulacao simulacao = new Simulacao(10,100);
+//
+//        simulacaoRepository.persist(simulacao);
+//
+//        TipoEmprestimo tipo = new TipoEmprestimo("SAC",simulacao);
+//        tipo.setSimulacao(simulacao);
+//        tipoEmprestimoRepository.persist(tipo);
+//
+//        Parcela parcela = new Parcela(1,100,10,10);
+//        Parcela parcela1 = new Parcela(1,100,10,10);
+//        parcela.setTipoEmprestimo(tipo);
+//        parcela1.setTipoEmprestimo(tipo);
+//        parcelaRepository.persist(parcela);
+//        parcelaRepository.persist(parcela1);
+//    }
 
 
     private TipoEmprestimo calcularSac(Produto produto, PropostaDto simulador) {
-        List<Parcela> parcelas = new ArrayList<>();
+        TipoEmprestimo tipoEmprestimo = new TipoEmprestimo("SAC");
         int prazo = simulador.getPrazo();
-        double amortizacaoMensal = simulador.getValorDesejado()/ prazo;
-        double saldoDevedor =  simulador.getValorDesejado();
+        double amortizacaoMensal = simulador.getValorDesejado() / prazo;
+        double saldoDevedor = simulador.getValorDesejado();
         for (int numeroParcela = 1; numeroParcela <= prazo; numeroParcela++) {
             double juros = saldoDevedor * produto.getTaxaJuros();
             double valorPrestacao = amortizacaoMensal + juros;
             saldoDevedor -= amortizacaoMensal;
-            Parcela parcela = new Parcela(numeroParcela, valorPrestacao,juros,amortizacaoMensal);
-            parcelas.add(parcela);
+            Parcela parcela = new Parcela(numeroParcela, valorPrestacao, juros, amortizacaoMensal);
+            tipoEmprestimo.addParcela(parcela);
         }
 
-        return new TipoEmprestimo("SAC", parcelas);
+        return tipoEmprestimo;
     }
 
 
-
-
-    private TipoEmprestimo calculadorModalidade(Produto produto, PropostaDto simulador) {
-        List<Parcela> parcelas = new ArrayList<>();
+    private TipoEmprestimo calcularPrice(Produto produto, PropostaDto simulador) {
+        TipoEmprestimo tipoEmprestimo = new TipoEmprestimo("PRICE");
 
         double taxa = produto.getTaxaJuros();
         double totalPrestacao = simulador.getValorDesejado() * (taxa / (1 - Math.pow(1 + taxa, -simulador.getPrazo())));
@@ -95,11 +100,13 @@ public class ProdutoService {
             double valorAmortizado = totalPrestacao - valorJuros;
 
             saldoDevedor -= valorAmortizado;
-            parcelas.add(new Parcela(numeroParcela,totalPrestacao,valorJuros,valorAmortizado));
+            Parcela parcela = new Parcela(numeroParcela, totalPrestacao, valorJuros, valorAmortizado);
+            tipoEmprestimo.addParcela(parcela);
+
         }
 
-        return new TipoEmprestimo("PRICE", parcelas);
 
+        return tipoEmprestimo;
     }
 
 }
