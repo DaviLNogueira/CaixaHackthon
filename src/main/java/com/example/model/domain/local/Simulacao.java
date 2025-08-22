@@ -7,9 +7,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-@Entity @Getter
+@Entity
+@Getter
 @Table(name = "SIMULACAO")
 @PersistenceUnit(name = "local")
 public class Simulacao extends PanacheEntityBase {
@@ -30,20 +32,47 @@ public class Simulacao extends PanacheEntityBase {
 
     @Column(name = "VALOR_DESEJADO")
     private double valorDesejado;
+
+    @Column(name = "VALOR_MEDIO_PRESTACAO")
+    private double valorMedioPrestacao = 0;
+
+    @Column(name = "VALOR_TOTAL_CREDITO")
+    private double valorTotalCredito = 0;
+
+
+    @Column(name = "DATA_REFERENCIA")
+    private Date dataReferencia;
+
     @OneToMany(mappedBy = "simulacao", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TipoEmprestimo> tipoEmprestimos = new ArrayList<>(); ;
+    private List<TipoEmprestimo> tipoEmprestimos = new ArrayList<>();
+    ;
 
 
     public void addTipoEmprestimo(TipoEmprestimo tipoEmprestimo) {
         tipoEmprestimo.setSimulacao(this);
         this.tipoEmprestimos.add(tipoEmprestimo);
+        selecionarMelhorTipoEmprestimo(tipoEmprestimo);
     }
 
-    public Simulacao(Produto produto, PropostaDto  propostaDto) {
+    public void selecionarMelhorTipoEmprestimo(TipoEmprestimo tipoEmprestimo) {
+        if(valorTotalCredito == 0){
+            valorTotalCredito = tipoEmprestimo.getValorTotalCredito();
+            valorMedioPrestacao = tipoEmprestimo.getValorMedioParcela();
+        } else if (tipoEmprestimo.getValorTotalCredito() < valorTotalCredito) {
+            valorTotalCredito = tipoEmprestimo.getValorTotalCredito();
+            valorMedioPrestacao = tipoEmprestimo.getValorMedioParcela();
+
+        }
+
+    }
+
+    public Simulacao(Produto produto, PropostaDto propostaDto) {
         this.codigoProduto = produto.getId();
         this.taxaJuros = produto.getTaxaJuros();
         this.prazo = propostaDto.getPrazo();
         this.valorDesejado = propostaDto.getValorDesejado();
+        this.dataReferencia = new Date();
+
 
     }
 

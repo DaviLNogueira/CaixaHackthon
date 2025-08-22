@@ -16,6 +16,10 @@ public class TipoEmprestimo extends PanacheEntityBase {
 
     private String tipo;
 
+    private double valorTotalCredito = 0;
+
+    private double qtdParcela = 0;
+
 
 
     @Id
@@ -31,7 +35,12 @@ public class TipoEmprestimo extends PanacheEntityBase {
 
     public void addParcela(Parcela parcela) {
         parcela.setTipoEmprestimo(this);
+        this.valorTotalCredito += parcela.getValorPrestacao();
+        this.qtdParcela++;
         this.parcelas.add(parcela);
+    }
+    public double getValorMedioParcela() {
+        return this.valorTotalCredito / this.qtdParcela;
     }
 
     public TipoEmprestimo(String tipo) {
