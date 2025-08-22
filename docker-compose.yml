@@ -1,4 +1,9 @@
 version: '3.8'
+
+networks:
+  caixa-network:
+    driver: bridge
+
 services:
   sqlserver-local:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -11,11 +16,33 @@ services:
       - "1433:1433"
     volumes:
       - sqlserver_data:/var/opt/mssql
+    networks:
+      - caixa-network
     healthcheck:
       test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourPassword123! -Q "SELECT 1" || exit 1
       interval: 10s
       timeout: 5s
       retries: 10
+    command: >
+      /bin/bash -c "
+      /opt/mssql/bin/sqlservr & 
+      sleep 15;
+      /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourPassword123! -Q 'IF DB_ID(''caixa_dev'') IS NULL CREATE DATABASE caixa_dev';
+      wait"
+
+  quarkus-app:
+    image: caixa-app:latest
+    container_name: quarkus-app
+    depends_on:
+      - sqlserver-local
+    environment:
+      - QUARKUS_DATASOURCE_LOCAL_JDBC_URL=jdbc:sqlserver://sqlserver-local:1433;databaseName=caixa_dev;trustServerCertificate=true
+      - QUARKUS_DATASOURCE_LOCAL_USERNAME=sa
+      - QUARKUS_DATASOURCE_LOCAL_PASSWORD=YourPassword123!
+    ports:
+      - "8080:8080"
+    networks:
+      - caixa-network
 
 volumes:
   sqlserver_data:

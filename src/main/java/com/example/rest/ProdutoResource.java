@@ -26,7 +26,7 @@ public class ProdutoResource {
 
     @POST
     @Path("/all")
-    public RespostaPropostaDto listarTodosProdutos(PropostaDto simulador) {
+    public RespostaPropostaDto listarTodosProdutos(PropostaDto simulador)  {
         return produtoService.getProduto(simulador);
     }
 

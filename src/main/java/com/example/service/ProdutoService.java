@@ -27,13 +27,14 @@ public class ProdutoService {
     @Inject
     ParcelaRepository parcelaRepository;
 
-    public RespostaPropostaDto getProduto(PropostaDto proposta) {
+    public RespostaPropostaDto getProduto(PropostaDto proposta)  {
         Produto produto = Produto.find(
-                "minimoMeses <= :prazo AND maximoMeses >= :prazo " +
-                        "AND valorMinimo <= :valor AND valorMaximo >= :valor",
+                "minimoMeses <= :prazo AND maximoMeses >= :prazo ",
                 Parameters.with("prazo", proposta.getPrazo())
-                        .and("valor", proposta.getValorDesejado())
         ).firstResult();
+//        if (proposta.getValorDesejado() < produto.getValorMinimo() || proposta.getValorDesejado() > produto.getValorMaximo() ) {
+//            throw new Exception("Para este prazo o valor desejado deve estar entre " + produto.getValorMinimo() + " e " + produto.getValorMaximo());
+//        }
         List<TipoEmprestimo> tipos = new ArrayList<>();
         tipos.add(calcularPrice(produto, proposta));
         tipos.add(calcularSac(produto, proposta));
@@ -50,23 +51,6 @@ public class ProdutoService {
         simulacaoRepository.persist(simulacao);
         return simulacao;
     }
-
-//    public void test(){
-//        Simulacao simulacao = new Simulacao(10,100);
-//
-//        simulacaoRepository.persist(simulacao);
-//
-//        TipoEmprestimo tipo = new TipoEmprestimo("SAC",simulacao);
-//        tipo.setSimulacao(simulacao);
-//        tipoEmprestimoRepository.persist(tipo);
-//
-//        Parcela parcela = new Parcela(1,100,10,10);
-//        Parcela parcela1 = new Parcela(1,100,10,10);
-//        parcela.setTipoEmprestimo(tipo);
-//        parcela1.setTipoEmprestimo(tipo);
-//        parcelaRepository.persist(parcela);
-//        parcelaRepository.persist(parcela1);
-//    }
 
 
     private TipoEmprestimo calcularSac(Produto produto, PropostaDto simulador) {
