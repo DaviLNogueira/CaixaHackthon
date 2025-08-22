@@ -27,20 +27,20 @@ public class ProdutoService {
     @Inject
     ParcelaRepository parcelaRepository;
 
-    public RespostaPropostaDto getProduto(PropostaDto simulador) {
+    public RespostaPropostaDto getProduto(PropostaDto proposta) {
         Produto produto = Produto.find(
                 "minimoMeses <= :prazo AND maximoMeses >= :prazo " +
                         "AND valorMinimo <= :valor AND valorMaximo >= :valor",
-                Parameters.with("prazo", simulador.getPrazo())
-                        .and("valor", simulador.getValorDesejado())
+                Parameters.with("prazo", proposta.getPrazo())
+                        .and("valor", proposta.getValorDesejado())
         ).firstResult();
         List<TipoEmprestimo> tipos = new ArrayList<>();
-        tipos.add(calcularPrice(produto, simulador));
-        tipos.add(calcularSac(produto, simulador));
+        tipos.add(calcularPrice(produto, proposta));
+        tipos.add(calcularSac(produto, proposta));
 
-        Simulacao simulacao = new Simulacao(produto.getId(), produto.getTaxaJuros());
-        simulacao.addTipoEmprestimo(calcularPrice(produto, simulador));
-        simulacao.addTipoEmprestimo(calcularSac(produto, simulador));
+        Simulacao simulacao = new Simulacao(produto, proposta);
+        simulacao.addTipoEmprestimo(calcularPrice(produto, proposta));
+        simulacao.addTipoEmprestimo(calcularSac(produto, proposta));
         salvarSimulacao(simulacao);
         return new RespostaPropostaDto(simulacao);
 
