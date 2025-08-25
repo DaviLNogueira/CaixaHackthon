@@ -16,7 +16,6 @@ public class PropostaDto {
     private Double valorDesejado;
 
     @NotNull(message = "O campo prazo é obrigatório")
-    @Positive(message = "O campo prazo deve ser maior que zero")
     private int prazo;
 
     // Construtor padrão necessário para JAX-RS

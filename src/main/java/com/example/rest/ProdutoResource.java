@@ -1,19 +1,19 @@
 package com.example.rest;
 
+import com.example.model.domain.local.RequisicaoLog;
 import com.example.model.dto.*;
 import com.example.service.ListagemService;
 import com.example.service.ProdutoService;
+import com.example.service.RequisicaotLogService;
+import com.google.type.DateTime;
 import jakarta.inject.Inject;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import lombok.Getter;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Path("/produto")
 @Produces(MediaType.APPLICATION_JSON)
@@ -29,7 +29,7 @@ public class ProdutoResource {
     ListagemService listagemService;
 
     @Inject
-    Validator validator;
+    RequisicaotLogService  requisicoesLogService;
 
     @POST
     @Path("/all")
@@ -54,6 +54,22 @@ public class ProdutoResource {
             data = new Date(Long.parseLong(dataReferencia));
         }
         return listagemService.estatisticasSimulacao(data);
+    }
+
+    @GET
+    @Path("/telemetria")
+    public TelemetricaPorData getTelemetricaPorData(@QueryParam("dataReferencia") String dataReferencia) {
+        Date data = new Date();
+        if(dataReferencia != null && !dataReferencia.isEmpty()){
+            data = new Date(Long.parseLong(dataReferencia));
+        }
+        return requisicoesLogService.getTelemetricaPorData(data);
+    }
+
+    @GET
+    @Path("/logs")
+    public List<RequisicaoLog> all() {
+        return RequisicaoLog.listAll();
     }
 
 
