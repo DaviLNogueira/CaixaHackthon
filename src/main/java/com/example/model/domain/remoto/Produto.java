@@ -7,30 +7,30 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "PRODUTO", schema = "dbo")
-@Getter @Setter
+@Getter
 @PersistenceUnit(name = "default")
 public class Produto extends PanacheEntityBase {
 
     @Id
     @Column(name = "CO_PRODUTO")
-    public Integer id;
+    private int id;
 
     @Column(name = "NO_PRODUTO")
-    public String nome;
+    private String nome;
 
     @Column(name = "PC_TAXA_JUROS")
-    public double taxaJuros;
+    private double taxaJuros;
 
     @Column(name = "NU_MINIMO_MESES")
-    public Integer minimoMeses;
+    private int minimoMeses;
 
     @Column(name = "NU_MAXIMO_MESES")
-    public Integer maximoMeses;
+    private int maximoMeses;
 
     @Column(name = "VR_MINIMO")
-    public Double valorMinimo;
+    private double valorMinimo;
 
     @Column(name = "VR_MAXIMO")
-    public Double valorMaximo;
+    private double valorMaximo;
 }
 

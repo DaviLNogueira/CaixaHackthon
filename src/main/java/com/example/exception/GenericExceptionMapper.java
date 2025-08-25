@@ -13,10 +13,10 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
     public Response toResponse(Throwable exception) {
 
         ErrorResponse error;
-        if (exception instanceof ApiExceptionCustom apiExceptionCustom) {
+        if (exception instanceof ApiException apiExceptionCustom) {
              error = new ErrorResponse(
-                    apiExceptionCustom.getMessage(),
                     apiExceptionCustom.getStatus().toString(),
+                     apiExceptionCustom.getMessage(),
                     apiExceptionCustom.getStatus().getStatusCode()
             );
         }

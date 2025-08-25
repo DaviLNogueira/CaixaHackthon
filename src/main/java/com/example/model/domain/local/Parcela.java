@@ -24,12 +24,18 @@ public class Parcela extends PanacheEntityBase {
     @JoinColumn(name = "ID_TIPO_EMPRESTIMO")
     private TipoEmprestimo tipoEmprestimo;
 
+    private double arrendodarValor(double valor){
+        return Double.parseDouble(String.format("%.2f",valor ).replace
+                (",", "."));
+    }
+
     public Parcela(int numero, double valorPrestacao, double valorJuros, double valorAmortizado) {
         this.numero = numero;
-        this.valorPrestacao = Math.round(valorPrestacao);
-        this.valorJuros = Math.round(valorJuros);
-        this.valorAmortizado = Math.round(valorAmortizado);
+        this.valorPrestacao = arrendodarValor(valorPrestacao);
+        this.valorJuros = arrendodarValor(valorJuros);
+        this.valorAmortizado = arrendodarValor(valorAmortizado);
     }
+
 
     public Parcela() {
 

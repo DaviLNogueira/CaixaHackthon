@@ -1,14 +1,13 @@
 package com.example.rest;
 
+import com.example.exception.ApiException;
 import com.example.model.domain.local.RequisicaoLog;
 import com.example.model.dto.*;
 import com.example.service.ListagemService;
 import com.example.service.ProdutoService;
 import com.example.service.RequisicaotLogService;
-import com.google.type.DateTime;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
-import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
@@ -32,10 +31,13 @@ public class ProdutoResource {
     RequisicaotLogService  requisicoesLogService;
 
     @POST
-    @Path("/all")
-    public RespostaPropostaDto listarTodosProdutos(@Valid PropostaDto simulador) throws Exception {
+    @Path("/nova-simulacao")
+    public RespostaPropostaDto realizarSimulacao(@Valid PropostaDto proposta) throws Exception {
 
-        return produtoService.getProduto(simulador);
+        if (proposta == null) {
+            throw new ApiException("Os parametros devem ser informados");
+        }
+        return produtoService.realizarSimulacao(proposta);
     }
 
     @GET

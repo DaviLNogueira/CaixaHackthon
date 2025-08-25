@@ -45,8 +45,9 @@ public class Simulacao extends PanacheEntityBase {
 
     @OneToMany(mappedBy = "simulacao", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TipoEmprestimo> tipoEmprestimos = new ArrayList<>();
-    ;
 
+
+    private String descricaoProduto;
 
     public void addTipoEmprestimo(TipoEmprestimo tipoEmprestimo) {
         tipoEmprestimo.setSimulacao(this);
@@ -68,6 +69,7 @@ public class Simulacao extends PanacheEntityBase {
 
     public Simulacao(Produto produto, PropostaDto propostaDto) {
         this.codigoProduto = produto.getId();
+        this.descricaoProduto = produto.getNome();
         this.taxaJuros = produto.getTaxaJuros();
         this.prazo = propostaDto.getPrazo();
         this.valorDesejado = propostaDto.getValorDesejado();

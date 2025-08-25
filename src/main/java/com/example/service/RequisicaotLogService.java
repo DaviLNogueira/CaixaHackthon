@@ -3,7 +3,6 @@ package com.example.service;
 import com.example.model.domain.local.RequisicaoLog;
 import com.example.model.dto.TelemetricaDto;
 import com.example.model.dto.TelemetricaPorData;
-import com.google.type.DateTime;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 

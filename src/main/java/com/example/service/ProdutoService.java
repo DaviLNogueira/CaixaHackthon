@@ -4,7 +4,7 @@ import com.azure.messaging.eventhubs.EventData;
 import com.azure.messaging.eventhubs.EventDataBatch;
 import com.azure.messaging.eventhubs.EventHubClientBuilder;
 import com.azure.messaging.eventhubs.EventHubProducerClient;
-import com.azure.messaging.eventhubs.models.CreateBatchOptions;
+import com.example.exception.ApiException;
 import com.example.model.domain.local.Parcela;
 import com.example.model.domain.local.TipoEmprestimo;
 import com.example.model.domain.local.Simulacao;
@@ -28,86 +28,6 @@ public class ProdutoService {
     SimulacaoRepository simulacaoRepository;
 
     private final ObjectMapper mapper = new ObjectMapper();
-
-//    private EventHubProducerClient producer;
-
-//    public void EventHubService() {
-//        this.producer = new EventHubClientBuilder()
-//                .connectionString(
-//                        "Endpoint=sb://eventhack.servicebus.windows.net/;" +
-//                                "SharedAccessKeyName=hack;" +
-//                                "SharedAccessKey=HeHeVaVqyVkntO2FnjQcs2ILh/4MuDo4y+AEhkp8z+g;" +
-//                                "EntityPath=simulacoes")
-//                .buildProducerClient();
-//    }
-//
-//    public void enviarJsons(List<String> jsons) {
-//        CreateBatchOptions options = new CreateBatchOptions().setPartitionId("0");
-//        EventDataBatch batch = producer.createBatch(options);
-//
-//        for (String json : jsons) {
-//            if (!batch.tryAdd(new EventData(json))) {
-//                producer.send(batch);
-//                batch = producer.createBatch(options);
-//                batch.tryAdd(new EventData(json));
-//            }
-//        }
-//
-//        producer.send(batch);
-//    }
-
-    public RespostaPropostaDto getProduto(PropostaDto proposta) throws Exception {
-        Produto produto = Produto.find(
-                "minimoMeses <= :prazo AND maximoMeses >= :prazo ",
-                Parameters.with("prazo", proposta.getPrazo())
-        ).firstResult();
-        if (proposta.getValorDesejado() < produto.getValorMinimo() || proposta.getValorDesejado() > produto.getValorMaximo() ) {
-            throw new Exception("Para este prazo o valor desejado deve estar entre " + produto.getValorMinimo() + " e " + produto.getValorMaximo());
-        }
-        List<TipoEmprestimo> tipos = new ArrayList<>();
-        tipos.add(calcularPrice(produto, proposta));
-        tipos.add(calcularSac(produto, proposta));
-
-        Simulacao simulacao = new Simulacao(produto, proposta);
-        simulacao.addTipoEmprestimo(calcularPrice(produto, proposta));
-        simulacao.addTipoEmprestimo(calcularSac(produto, proposta));
-        RespostaPropostaDto resposta = new RespostaPropostaDto(simulacao);
-        salvarSimulacao(simulacao,resposta);
-        return resposta;
-
-    }
-
-    public Simulacao salvarSimulacao(Simulacao simulacao, RespostaPropostaDto respostaPropostaDto) {
-        simulacaoRepository.persist(simulacao);
-        try {
-            String json = mapper.writeValueAsString(respostaPropostaDto);
-
-            // 3. Cria o cliente do Event Hub
-            EventHubProducerClient producer = new EventHubClientBuilder()
-                    .connectionString(
-                            "Endpoint=sb://eventhack.servicebus.windows.net/;" +
-                                    "SharedAccessKeyName=hack;" +
-                                    "SharedAccessKey=HeHeVaVqyVkntO2FnjQcs2Ilh/4MUDo4y+AEhKp8z+g=;" + // <-- faltava o "="
-                                    "EntityPath=simulacoes")
-                    .buildProducerClient();
-
-            // 4. Cria batch e adiciona evento
-            EventDataBatch batch = producer.createBatch();
-            batch.tryAdd(new EventData(json.getBytes(StandardCharsets.UTF_8)));
-
-            // 5. Envia para o Event Hub
-            producer.send(batch);
-
-            // 6. Fecha o cliente
-            producer.close();
-
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao enviar dados para o Event Hub", e);
-            // Aqui você pode logar o erro ou lançar uma exception custom
-        }
-        return simulacao;
-    }
-
 
     private TipoEmprestimo calcularSac(Produto produto, PropostaDto simulador) {
         TipoEmprestimo tipoEmprestimo = new TipoEmprestimo("SAC");
@@ -145,8 +65,60 @@ public class ProdutoService {
 
         }
 
-
         return tipoEmprestimo;
     }
+
+    //TODO padronizar método de busca
+    public RespostaPropostaDto realizarSimulacao(PropostaDto proposta) throws Exception {
+        Produto produto = Produto.find(
+                "minimoMeses <= :prazo AND maximoMeses >= :prazo ",
+                Parameters.with("prazo", proposta.getPrazo())
+        ).firstResult();
+        if (proposta.getValorDesejado() < produto.getValorMinimo() || proposta.getValorDesejado() > produto.getValorMaximo() ) {
+            throw new ApiException(String.format(
+                    "Para este prazo o valor desejado deve estar entre %s e %s meses",
+                    produto.getValorMinimo(), produto.getValorMaximo()));
+        }
+        List<TipoEmprestimo> tipos = new ArrayList<>();
+        tipos.add(calcularPrice(produto, proposta));
+        tipos.add(calcularSac(produto, proposta));
+
+        Simulacao simulacao = new Simulacao(produto, proposta);
+        simulacao.addTipoEmprestimo(calcularPrice(produto, proposta));
+        simulacao.addTipoEmprestimo(calcularSac(produto, proposta));
+        simulacaoRepository.persist(simulacao);
+        RespostaPropostaDto resposta = new RespostaPropostaDto(simulacao, produto);
+        enviarDadosEventHub(resposta);
+        return resposta;
+
+    }
+
+    public void enviarDadosEventHub(RespostaPropostaDto respostaPropostaDto) throws ApiException {
+        //TODO melhor código
+        try {
+            String json = mapper.writeValueAsString(respostaPropostaDto);
+
+            EventHubProducerClient producer = new EventHubClientBuilder()
+                    .connectionString(
+                            "Endpoint=sb://eventhack.servicebus.windows.net/;" +
+                                    "SharedAccessKeyName=hack;" +
+                                    "SharedAccessKey=HeHeVaVqyVkntO2FnjQcs2Ilh/4MUDo4y+AEhKp8z+g=;" + // <-- faltava o "="
+                                    "EntityPath=simulacoes")
+                    .buildProducerClient();
+
+            EventDataBatch batch = producer.createBatch();
+            batch.tryAdd(new EventData(json.getBytes(StandardCharsets.UTF_8)));
+
+            producer.send(batch);
+
+            producer.close();
+
+        } catch (Exception e) {
+            throw new ApiException(String.format("Erro ao enviar dados para o Event Hub: %s",e.getMessage()));
+        }
+    }
+
+
+
 
 }

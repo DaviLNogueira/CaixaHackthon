@@ -20,14 +20,13 @@ public class RespostaPropostaDto extends PanacheEntityBase {
     private List<TipoEmprestimoDto> resultadoSimulacao;
 
 
-    public RespostaPropostaDto(Simulacao  simulacao) {
-        //TODO : salvar simulacao
+    public RespostaPropostaDto(Simulacao  simulacao , Produto produto) {
         this.idSimulacao = simulacao.getIdSimulacao();
         this.codigoProduto = simulacao.getCodigoProduto();
-//        this.descricaoProduto = produto.getNome();
+        this.descricaoProduto = produto.getNome();
         this.taxaJuros = simulacao.getTaxaJuros();
         this.resultadoSimulacao = simulacao.getTipoEmprestimos().stream()
-                .map(TipoEmprestimoDto::new)  // Method reference - mais limpo
+                .map(TipoEmprestimoDto::new)
                 .collect(Collectors.toList());
     }
 
