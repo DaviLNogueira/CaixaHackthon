@@ -56,14 +56,14 @@ public class ProdutoService {
 //        producer.send(batch);
 //    }
 
-    public RespostaPropostaDto getProduto(PropostaDto proposta)  {
+    public RespostaPropostaDto getProduto(PropostaDto proposta) throws Exception {
         Produto produto = Produto.find(
                 "minimoMeses <= :prazo AND maximoMeses >= :prazo ",
                 Parameters.with("prazo", proposta.getPrazo())
         ).firstResult();
-//        if (proposta.getValorDesejado() < produto.getValorMinimo() || proposta.getValorDesejado() > produto.getValorMaximo() ) {
-//            throw new Exception("Para este prazo o valor desejado deve estar entre " + produto.getValorMinimo() + " e " + produto.getValorMaximo());
-//        }
+        if (proposta.getValorDesejado() < produto.getValorMinimo() || proposta.getValorDesejado() > produto.getValorMaximo() ) {
+            throw new Exception("Para este prazo o valor desejado deve estar entre " + produto.getValorMinimo() + " e " + produto.getValorMaximo());
+        }
         List<TipoEmprestimo> tipos = new ArrayList<>();
         tipos.add(calcularPrice(produto, proposta));
         tipos.add(calcularSac(produto, proposta));

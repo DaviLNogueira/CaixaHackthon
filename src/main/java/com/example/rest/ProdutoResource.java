@@ -4,12 +4,16 @@ import com.example.model.dto.*;
 import com.example.service.ListagemService;
 import com.example.service.ProdutoService;
 import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import lombok.Getter;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Path("/produto")
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,9 +28,13 @@ public class ProdutoResource {
     @Inject
     ListagemService listagemService;
 
+    @Inject
+    Validator validator;
+
     @POST
     @Path("/all")
-    public RespostaPropostaDto listarTodosProdutos(PropostaDto simulador)  {
+    public RespostaPropostaDto listarTodosProdutos(@Valid PropostaDto simulador) throws Exception {
+
         return produtoService.getProduto(simulador);
     }
 
