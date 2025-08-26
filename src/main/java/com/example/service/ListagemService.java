@@ -4,13 +4,9 @@ import com.example.model.domain.local.Simulacao;
 import com.example.model.dto.EstatisticaDto;
 import com.example.model.dto.SimulacoesDto;
 import com.example.model.dto.VolumeDto;
-import com.example.repository.ProdutoRepository;
 import com.example.repository.SimulacaoRepository;
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
-import io.quarkus.panache.common.Parameters;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -21,9 +17,6 @@ public class ListagemService {
 
     @Inject
     SimulacaoRepository simulacaoRepository;
-
-    @Inject
-    ProdutoRepository produtoRepository;
 
 
     public SimulacoesDto listarSimulacoes(int pagina, int qtdRegistros) {
@@ -75,7 +68,6 @@ public class ListagemService {
                     .mapToDouble(Simulacao::getValorTotalCredito)
                     .sum();
 
-            //TODO Buscar nome produto
             estatistica.add(new EstatisticaDto(
                     codigoProduto,
                     mediaTaxaJuros,

@@ -1,7 +1,10 @@
 package com.example.model.dto;
 
 import com.example.model.domain.local.Parcela;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter @Setter
 public class ParcelaDto {  // REMOVE extends PanacheEntityBase
 
     private int numero;
@@ -16,9 +19,4 @@ public class ParcelaDto {  // REMOVE extends PanacheEntityBase
         this.valorPrestacao = parcela.getValorPrestacao();
     }
 
-    // Getters
-    public int getNumero() { return numero; }
-    public double getValorAmortizado() { return valorAmortizado; }
-    public double getValorJuros() { return valorJuros; }
-    public double getValorPrestacao() { return valorPrestacao; }
 }

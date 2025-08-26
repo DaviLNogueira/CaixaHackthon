@@ -68,9 +68,7 @@ public class ProdutoService {
         return tipoEmprestimo;
     }
 
-    //TODO padronizar método de busca
     public RespostaPropostaDto realizarSimulacao(PropostaDto proposta) throws Exception {
-        //TODO tratar quandonão encontrar produto
         Produto produto = Produto.find(
                 "minimoMeses <= :prazo AND maximoMeses >= :prazo ",
                 Parameters.with("prazo", proposta.getPrazo())
@@ -89,13 +87,12 @@ public class ProdutoService {
         simulacao.addTipoEmprestimo(calcularSac(produto, proposta));
         simulacaoRepository.persist(simulacao);
         RespostaPropostaDto resposta = new RespostaPropostaDto(simulacao, produto);
-//        enviarDadosEventHub(resposta);
+        enviarDadosEventHub(resposta);
         return resposta;
 
     }
 
     public void enviarDadosEventHub(RespostaPropostaDto respostaPropostaDto) throws ApiException {
-        //TODO melhor código
         try {
             String json = mapper.writeValueAsString(respostaPropostaDto);
 

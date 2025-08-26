@@ -2,7 +2,6 @@ package com.example.model.dto;
 
 import com.example.model.domain.local.Simulacao;
 import com.example.model.domain.remoto.Produto;
-import com.example.model.domain.local.TipoEmprestimo;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,9 +1,12 @@
 package com.example.model.dto;
 
 import com.example.model.domain.local.TipoEmprestimo;
+import lombok.Getter;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
 public class TipoEmprestimoDto {  // REMOVE extends PanacheEntityBase
 
     private String tipo;
@@ -16,7 +19,4 @@ public class TipoEmprestimoDto {  // REMOVE extends PanacheEntityBase
                 .collect(Collectors.toList());
     }
 
-    // Getters e Setters
-    public String getTipo() { return tipo; }
-    public List<ParcelaDto> getParcelas() { return parcelas; }
 }

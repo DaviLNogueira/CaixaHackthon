@@ -1,7 +1,6 @@
 package com.example.rest;
 
 import com.example.exception.ApiException;
-import com.example.model.domain.local.RequisicaoLog;
 import com.example.model.dto.*;
 import com.example.service.ListagemService;
 import com.example.service.ProdutoService;
@@ -15,7 +14,7 @@ import jakarta.ws.rs.core.MediaType;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
+
 
 @Path("/produto")
 @Produces(MediaType.APPLICATION_JSON)
@@ -74,13 +73,6 @@ public class ProdutoResource {
         }
         return requisicoesLogService.getTelemetricaPorData(data);
     }
-
-    @GET
-    @Path("/logs")
-    public List<RequisicaoLog> all() {
-        return RequisicaoLog.listAll();
-    }
-
 
 
 }
