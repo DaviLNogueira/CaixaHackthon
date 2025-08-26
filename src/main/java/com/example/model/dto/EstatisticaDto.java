@@ -16,8 +16,14 @@ public class EstatisticaDto extends PanacheEntityBase {
     public EstatisticaDto(int codigoProduto, double taxaMediaJuro, double valorTotalCredito, double valorTotalDesejado, double valorMedioPrestacao) {
         this.codigoProduto = codigoProduto;
         this.taxaMediaJuro = taxaMediaJuro;
-        this.valorTotalCredito = valorTotalCredito;
-        this.valorTotalDesejado = valorTotalDesejado;
-        this.valorMedioPrestacao = valorMedioPrestacao;
+        this.valorTotalCredito = arrendodarValor(valorTotalCredito);
+        this.valorTotalDesejado = arrendodarValor(valorTotalDesejado);
+        this.valorMedioPrestacao = arrendodarValor(valorMedioPrestacao);
+    }
+
+    private double arrendodarValor(double valor){
+        return Double.parseDouble(String.format("%.2f",valor ).replace
+                (",", "."));
     }
 }
+

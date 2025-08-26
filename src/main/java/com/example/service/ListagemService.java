@@ -4,9 +4,13 @@ import com.example.model.domain.local.Simulacao;
 import com.example.model.dto.EstatisticaDto;
 import com.example.model.dto.SimulacoesDto;
 import com.example.model.dto.VolumeDto;
+import com.example.repository.ProdutoRepository;
 import com.example.repository.SimulacaoRepository;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
+import io.quarkus.panache.common.Parameters;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -17,6 +21,9 @@ public class ListagemService {
 
     @Inject
     SimulacaoRepository simulacaoRepository;
+
+    @Inject
+    ProdutoRepository produtoRepository;
 
 
     public SimulacoesDto listarSimulacoes(int pagina, int qtdRegistros) {
@@ -42,7 +49,7 @@ public class ListagemService {
 
         for (Integer codigoProduto : codigosProdutos) {
             List<Simulacao> simulacoes = simulacaoRepository
-                    .find("codigoProduto = ?1", codigoProduto)
+                    .find("codigoProduto = ?1 and  CAST(dataReferencia AS DATE) = CAST(?2 AS DATE)", codigoProduto,dataReferencia)
                     .list();
 
 
