@@ -12,6 +12,8 @@ import jakarta.validation.constraints.Positive;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -51,10 +53,12 @@ public class ProdutoResource {
 
     @GET
     @Path("/estatistica")
-    public VolumeDto listarEstatistica(@QueryParam("dataReferencia") String dataReferencia) {
+    public VolumeDto listarEstatistica(@QueryParam("dataReferencia") String dataReferencia) throws ParseException {
         Date data = new Date();
-        if(dataReferencia != null && !dataReferencia.isEmpty()){
-            data = new Date(Long.parseLong(dataReferencia));
+        if(dataReferencia != null){
+            SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+            formato.setLenient(false);
+            data =  formato.parse(dataReferencia);
         }
         return listagemService.estatisticasSimulacao(data);
     }
