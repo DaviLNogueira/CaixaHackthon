@@ -10,11 +10,7 @@ import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @ApplicationScoped
 public class ListagemService {
@@ -24,17 +20,14 @@ public class ListagemService {
 
 
     public SimulacoesDto listarSimulacoes(int pagina, int qtdRegistros) {
-        PanacheQuery<Simulacao> query = simulacaoRepository.findAll().page(pagina, qtdRegistros);
-
-        //TODO:resolver depois pq não está listando
-        List<Simulacao> registros = query.list().stream().toList();
-        long totalRegistros = Simulacao.count();
+        PanacheQuery<Simulacao> query = simulacaoRepository.findAll()
+                .page(Page.of(pagina - 1, qtdRegistros));
 
         return new SimulacoesDto(
                 pagina,
-                registros,
+                query.list(),
                 qtdRegistros,
-                totalRegistros
+                simulacaoRepository.count()
         );
     }
 

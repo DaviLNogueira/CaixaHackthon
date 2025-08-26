@@ -10,9 +10,11 @@ public class RegistrosDto {
     private Long idSimulacao ;
     private double valorDesejado;
     private int prazo;
+    private double valorTotalParcelas;
     public RegistrosDto(Simulacao simulacao) {
        this.idSimulacao = simulacao.getIdSimulacao();
        this.valorDesejado = simulacao.getValorDesejado();
        this.prazo = simulacao.getPrazo();
+       this.valorTotalParcelas = simulacao.getValorTotalCredito();
     }
 }

@@ -70,13 +70,14 @@ public class ProdutoService {
 
     //TODO padronizar método de busca
     public RespostaPropostaDto realizarSimulacao(PropostaDto proposta) throws Exception {
+        //TODO tratar quandonão encontrar produto
         Produto produto = Produto.find(
                 "minimoMeses <= :prazo AND maximoMeses >= :prazo ",
                 Parameters.with("prazo", proposta.getPrazo())
         ).firstResult();
         if (proposta.getValorDesejado() < produto.getValorMinimo() || proposta.getValorDesejado() > produto.getValorMaximo() ) {
             throw new ApiException(String.format(
-                    "Para este prazo o valor desejado deve estar entre %s e %s meses",
+                    "Para este prazo o valor desejado deve estar entre %s e %s",
                     produto.getValorMinimo(), produto.getValorMaximo()));
         }
         List<TipoEmprestimo> tipos = new ArrayList<>();

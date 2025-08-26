@@ -8,6 +8,7 @@ import com.example.service.ProdutoService;
 import com.example.service.RequisicaotLogService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
@@ -43,7 +44,7 @@ public class ProdutoResource {
     @GET
     @Path("/listar-simulacoes")
     public SimulacoesDto listarSimulacoes(
-            @QueryParam("pagina") @DefaultValue("1") int pagina,
+            @QueryParam("pagina") @DefaultValue("1") @Positive(message = "O campo pagina deve ser maior que 0") int pagina,
             @QueryParam("qtdRegistrosPagina") @DefaultValue("10") int qtdRegistros) {
         return listagemService.listarSimulacoes(pagina, qtdRegistros);
     }

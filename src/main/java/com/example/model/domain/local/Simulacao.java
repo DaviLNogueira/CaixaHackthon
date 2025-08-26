@@ -5,6 +5,7 @@ import com.example.model.dto.PropostaDto;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "SIMULACAO")
 @PersistenceUnit(name = "local")
 public class Simulacao extends PanacheEntityBase {
