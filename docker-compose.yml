@@ -5,9 +5,9 @@ networks:
     driver: bridge
 
 services:
-  sqlserver-local:
+  sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: sqlserver-produto-local
+    container_name: sqlserver
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=YourPassword123!
@@ -31,14 +31,12 @@ services:
       wait"
 
   quarkus-app:
-    image: caixa-app:latest
     container_name: quarkus-app
+    build:
+      context: .  # contexto raiz do projeto
+      dockerfile: src/main/docker/Dockerfile.jvm
     depends_on:
-      - sqlserver-local
-    environment:
-      - QUARKUS_DATASOURCE_LOCAL_JDBC_URL=jdbc:sqlserver://sqlserver-local:1433;databaseName=caixa_dev;trustServerCertificate=true
-      - QUARKUS_DATASOURCE_LOCAL_USERNAME=sa
-      - QUARKUS_DATASOURCE_LOCAL_PASSWORD=YourPassword123!
+      - sqlserver
     ports:
       - "8080:8080"
     networks:
