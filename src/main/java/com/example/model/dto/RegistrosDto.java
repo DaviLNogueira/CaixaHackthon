@@ -13,8 +13,13 @@ public class RegistrosDto {
     private double valorTotalParcelas;
     public RegistrosDto(Simulacao simulacao) {
        this.idSimulacao = simulacao.getIdSimulacao();
-       this.valorDesejado = simulacao.getValorDesejado();
+       this.valorDesejado = arrendodarValor(simulacao.getValorDesejado());
        this.prazo = simulacao.getPrazo();
-       this.valorTotalParcelas = simulacao.getValorTotalCredito();
+       this.valorTotalParcelas = arrendodarValor(simulacao.getValorTotalCredito());
+    }
+
+    private double arrendodarValor(double valor){
+        return Double.parseDouble(String.format("%.2f",valor ).replace
+                (",", "."));
     }
 }

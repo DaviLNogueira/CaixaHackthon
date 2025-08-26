@@ -89,7 +89,7 @@ public class ProdutoService {
         simulacao.addTipoEmprestimo(calcularSac(produto, proposta));
         simulacaoRepository.persist(simulacao);
         RespostaPropostaDto resposta = new RespostaPropostaDto(simulacao, produto);
-        enviarDadosEventHub(resposta);
+//        enviarDadosEventHub(resposta);
         return resposta;
 
     }

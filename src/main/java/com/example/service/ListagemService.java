@@ -68,6 +68,7 @@ public class ListagemService {
                     .mapToDouble(Simulacao::getValorTotalCredito)
                     .sum();
 
+            //TODO Buscar nome produto
             estatistica.add(new EstatisticaDto(
                     codigoProduto,
                     mediaTaxaJuros,

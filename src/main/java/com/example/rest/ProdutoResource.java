@@ -65,10 +65,12 @@ public class ProdutoResource {
 
     @GET
     @Path("/telemetria")
-    public TelemetricaPorData getTelemetricaPorData(@QueryParam("dataReferencia") String dataReferencia) {
+    public TelemetricaPorData getTelemetricaPorData(@QueryParam("dataReferencia") String dataReferencia) throws ParseException {
         Date data = new Date();
         if(dataReferencia != null && !dataReferencia.isEmpty()){
-            data = new Date(Long.parseLong(dataReferencia));
+            SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+            formato.setLenient(false);
+            data =  formato.parse(dataReferencia);
         }
         return requisicoesLogService.getTelemetricaPorData(data);
     }

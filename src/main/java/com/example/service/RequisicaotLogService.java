@@ -6,12 +6,7 @@ import com.example.model.dto.TelemetricaPorData;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.DoubleSummaryStatistics;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @ApplicationScoped
 public class RequisicaotLogService {
@@ -22,40 +17,55 @@ public class RequisicaotLogService {
     }
 
 
+    public TelemetricaPorData getTelemetricaPorData(Date dataReferencia) {
+        List<String> rotas = RequisicaoLog
+                .find("SELECT DISTINCT s.rota FROM RequisicaoLog s WHERE CAST(s.dataReferencia AS DATE) = CAST(?1 AS DATE)", dataReferencia)
+                .project(String.class)
+                .list();
 
-    public TelemetricaPorData getTelemetricaPorData(Date dateTime) {
-        LocalDateTime inicio = LocalDateTime.of(dateTime.getYear(),dateTime.getMonth(),dateTime.getDay(),0,0,0 );
-        LocalDateTime fim = LocalDateTime.of(dateTime.getYear(),dateTime.getMonth(),dateTime.getDay(),23,59,59);
 
-        List<RequisicaoLog> logs = RequisicaoLog.getEntityManager().createQuery(
-                        "SELECT l FROM RequisicaoLog l WHERE l.dataReferencia BETWEEN :inicio AND :fim",
-                        RequisicaoLog.class)
-                .setParameter("inicio", inicio)
-                .setParameter("fim", fim)
-                .getResultList();
+        List<TelemetricaDto> telemetria = new ArrayList<>();
 
-        List<TelemetricaDto>  dados = new ArrayList<>(logs.stream()
-                .collect(Collectors.groupingBy(
-                        RequisicaoLog::getRota,
-                        Collectors.collectingAndThen(Collectors.toList(), list -> {
-                            long total = list.size();
-                            long sucessos = list.stream().filter(RequisicaoLog::isSucesso).count();
-                            DoubleSummaryStatistics stats = list.stream()
-                                    .mapToDouble(RequisicaoLog::getDuracao)
-                                    .summaryStatistics();
+        for (String rota : rotas) {
+            List<RequisicaoLog> requisicaoLog = RequisicaoLog
+                    .find("rota = ?1 and CAST(dataReferencia AS DATE) = CAST(?2 AS DATE)", rota, dataReferencia)
+                    .list();
 
-                            return new TelemetricaDto(
-                                    list.get(0).getRota(),
-                                    (int) total,
-                                    stats.getAverage(),
-                                    stats.getMin(),
-                                    stats.getMax(),
-                                    sucessos
-                            );
-                        })
-                ))
-                .values());
 
-       return new TelemetricaPorData(dateTime.toString(),dados);
+            double tempoMedio = requisicaoLog.stream()
+                    .mapToDouble(RequisicaoLog::getDuracao)
+                    .average()
+                    .orElse(0);
+
+            double tempoMinimo = requisicaoLog.stream()
+                    .mapToDouble(RequisicaoLog::getDuracao)
+                    .min()
+                    .orElse(0);
+
+
+            double tempoMaximo = requisicaoLog.stream()
+                    .mapToDouble(RequisicaoLog::getDuracao)
+                    .max().orElse(0);
+
+
+            long quantidadeReq = requisicaoLog.size();
+
+            long sucesso = requisicaoLog.stream().filter(RequisicaoLog::isSucesso).count();
+
+
+            telemetria.add(
+                    new TelemetricaDto(
+                            rota,
+                            quantidadeReq,
+                            tempoMedio,
+                            tempoMinimo,
+                            tempoMaximo,
+                            (double) sucesso  / quantidadeReq
+                    )
+            );
+
+        }
+
+        return new TelemetricaPorData(dataReferencia, telemetria);
     }
 }
