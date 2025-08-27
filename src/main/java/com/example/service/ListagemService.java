@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.model.domain.local.Simulacao;
+import com.example.model.domain.remoto.Produto;
 import com.example.model.dto.EstatisticaDto;
 import com.example.model.dto.SimulacoesDto;
 import com.example.model.dto.VolumeDto;
@@ -45,6 +46,8 @@ public class ListagemService {
                     .find("codigoProduto = ?1 and  CAST(dataReferencia AS DATE) = CAST(?2 AS DATE)", codigoProduto,dataReferencia)
                     .list();
 
+            Produto produto = Produto.find("id = ?1", codigoProduto).firstResult();
+
 
             double mediaTaxaJuros = simulacoes.stream()
                     .mapToDouble(Simulacao::getTaxaJuros)
@@ -69,7 +72,7 @@ public class ListagemService {
                     .sum();
 
             estatistica.add(new EstatisticaDto(
-                    codigoProduto,
+                    produto,
                     mediaTaxaJuros,
                     somaValorCredito,
                     somaValorDesejado,

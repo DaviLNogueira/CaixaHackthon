@@ -24,12 +24,12 @@ public class Produto extends PanacheEntityBase {
     private int minimoMeses;
 
     @Column(name = "NU_MAXIMO_MESES")
-    private int maximoMeses;
+    private Integer maximoMeses;
 
     @Column(name = "VR_MINIMO")
     private double valorMinimo;
 
     @Column(name = "VR_MAXIMO")
-    private double valorMaximo;
+    private Integer valorMaximo;
 }
 

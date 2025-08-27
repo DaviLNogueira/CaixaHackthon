@@ -70,13 +70,15 @@ public class ProdutoService {
 
     public RespostaPropostaDto realizarSimulacao(PropostaDto proposta) throws Exception {
         Produto produto = Produto.find(
-                "minimoMeses <= :prazo AND maximoMeses >= :prazo ",
-                Parameters.with("prazo", proposta.getPrazo())
+                "valorMinimo <= :valor AND (valorMaximo IS NULL OR valorMaximo >= :valor)",
+                Parameters.with("valor", proposta.getValorDesejado())
         ).firstResult();
-        if (proposta.getValorDesejado() < produto.getValorMinimo() || proposta.getValorDesejado() > produto.getValorMaximo() ) {
+        if (proposta.getPrazo() < produto.getMinimoMeses() ) {
+            String maximoMesesTexto = produto.getMaximoMeses() != null ? String.valueOf(produto.getMaximoMeses()) : "ilimitado";
+
             throw new ApiException(String.format(
-                    "Para este prazo o valor desejado deve estar entre %s e %s",
-                    produto.getValorMinimo(), produto.getValorMaximo()));
+                    "Para este valor o prazo deve ser maior ou igual a %d e menor ou igual a %s",
+                    produto.getMinimoMeses(), maximoMesesTexto));
         }
         List<TipoEmprestimo> tipos = new ArrayList<>();
         tipos.add(calcularPrice(produto, proposta));

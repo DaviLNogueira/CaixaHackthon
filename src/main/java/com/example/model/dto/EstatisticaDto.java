@@ -1,5 +1,6 @@
 package com.example.model.dto;
 
+import com.example.model.domain.remoto.Produto;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,13 +9,15 @@ import lombok.Setter;
 public class EstatisticaDto extends PanacheEntityBase {
 
     private int codigoProduto;
+    private String descricaoProduto;
     private double taxaMediaJuro;
     private double valorTotalCredito;
     private double valorTotalDesejado;
     private double valorMedioPrestacao;
 
-    public EstatisticaDto(int codigoProduto, double taxaMediaJuro, double valorTotalCredito, double valorTotalDesejado, double valorMedioPrestacao) {
-        this.codigoProduto = codigoProduto;
+    public EstatisticaDto(Produto produto, double taxaMediaJuro, double valorTotalCredito, double valorTotalDesejado, double valorMedioPrestacao) {
+        this.codigoProduto = produto.getId();
+        this.descricaoProduto = produto.getNome();
         this.taxaMediaJuro = taxaMediaJuro;
         this.valorTotalCredito = arrendodarValor(valorTotalCredito);
         this.valorTotalDesejado = arrendodarValor(valorTotalDesejado);

@@ -57,7 +57,7 @@ public class RotasHackathonResource {
 
     @Operation(
             summary = "Serviço para retornar todas as simulações",
-            description = "Utiliza de paginação para retornar os dados(caso não respondida assumirá valores padrão)"
+            description = "Utiliza de paginação para retornar os dados(caso não respondida assumirá valores padrões)"
     )
     @GET
     @Path("/listar-simulacoes")
@@ -76,7 +76,6 @@ public class RotasHackathonResource {
     public VolumeDto listarEstatistica(
             @Parameter(
                     description = "Data no formato YYYY-MM-DD",
-                    example = "2025-07-26",
                     schema = @Schema(
                             pattern = "^\\d{4}-\\d{2}-\\d{2}$",
                             implementation = String.class
@@ -93,14 +92,13 @@ public class RotasHackathonResource {
 
     @Operation(
             summary = "Serviço para retornar dados de telemetria com volumes e tempos de resposta de cada serviço",
-            description = "Utiliza de parametro de data informada na query de requisição(caso não respondida assumirá valores padrão)"
+            description = "Utiliza de parametro de data informada na query de requisição(caso não respondida assumirá valores padrões)"
     )
     @GET
     @Path("/telemetria")
     public TelemetricaPorData getTelemetricaPorData(
             @Parameter(
                     description = "Data no formato YYYY-MM-DD",
-                    example = "2025-07-26",
                     schema = @Schema(
                             pattern = "^\\d{4}-\\d{2}-\\d{2}$",
                             implementation = String.class
