@@ -5,6 +5,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+import io.quarkus.logging.Log;
 
 @Provider
 public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
@@ -27,6 +28,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()
             );
         }
+        Log.error(exception);
 
 
 

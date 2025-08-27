@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.4'
 
 networks:
   caixa-network:
@@ -23,17 +23,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-    command: >
-      /bin/bash -c "
-      /opt/mssql/bin/sqlservr & 
-      sleep 15;
-      /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourPassword123! -Q 'IF DB_ID(''caixa_dev'') IS NULL CREATE DATABASE caixa_dev';
-      wait"
 
   quarkus-app:
     container_name: quarkus-app
     build:
-      context: .  # contexto raiz do projeto
+      context: .
       dockerfile: src/main/docker/Dockerfile.jvm
     depends_on:
       - sqlserver
@@ -41,6 +35,7 @@ services:
       - "8080:8080"
     networks:
       - caixa-network
+    restart: on-failure
 
 volumes:
   sqlserver_data:
