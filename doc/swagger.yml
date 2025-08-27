@@ -1,0 +1,246 @@
+---
+openapi: 3.1.0
+components:
+  schemas:
+    EstatisticaDto:
+      type: object
+      properties:
+        codigoProduto:
+          type: integer
+          format: int32
+        descricaoProduto:
+          type: string
+        taxaMediaJuro:
+          type: number
+          format: double
+        valorTotalCredito:
+          type: number
+          format: double
+        valorTotalDesejado:
+          type: number
+          format: double
+        valorMedioPrestacao:
+          type: number
+          format: double
+    ParcelaDto:
+      type: object
+      properties:
+        numero:
+          type: integer
+          format: int32
+        valorAmortizado:
+          type: number
+          format: double
+        valorJuros:
+          type: number
+          format: double
+        valorPrestacao:
+          type: number
+          format: double
+    PropostaDto:
+      type: object
+      required:
+      - valorDesejado
+      - prazo
+      properties:
+        valorDesejado:
+          type: number
+          format: double
+          default: 1000
+        prazo:
+          type: integer
+          exclusiveMinimum: 0
+          format: int32
+          default: 5
+    RegistrosDto:
+      type: object
+      properties:
+        idSimulacao:
+          type: integer
+          format: int64
+        valorDesejado:
+          type: number
+          format: double
+        prazo:
+          type: integer
+          format: int32
+        valorTotalParcelas:
+          type: number
+          format: double
+    RespostaPropostaDto:
+      type: object
+      properties:
+        idSimulacao:
+          type: integer
+          format: int64
+        codigoProduto:
+          type: integer
+          format: int32
+        descricaoProduto:
+          type: string
+        taxaJuros:
+          type: number
+          format: double
+        resultadoSimulacao:
+          type: array
+          items:
+            $ref: "#/components/schemas/TipoEmprestimoDto"
+    SimulacoesDto:
+      type: object
+      properties:
+        pagina:
+          type: integer
+          format: int32
+        qtdRegistros:
+          type: integer
+          format: int64
+        qtdRegistroPagina:
+          type: integer
+          format: int32
+        registros:
+          type: array
+          items:
+            $ref: "#/components/schemas/RegistrosDto"
+    TelemetricaDto:
+      type: object
+      properties:
+        nomeApi:
+          type: string
+        qtdRequisicoes:
+          type: integer
+          format: int64
+        tempoMedio:
+          type: number
+          format: double
+        tempoMinimo:
+          type: number
+          format: double
+        tempoMaximo:
+          type: number
+          format: double
+        porcentualSucesso:
+          type: number
+          format: double
+    TelemetricaPorData:
+      type: object
+      properties:
+        dataReferencia:
+          type: string
+        listaEndpoints:
+          type: array
+          items:
+            $ref: "#/components/schemas/TelemetricaDto"
+    TipoEmprestimoDto:
+      type: object
+      properties:
+        tipo:
+          type: string
+        parcelas:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParcelaDto"
+    VolumeDto:
+      type: object
+      properties:
+        dataReferencia:
+          type: string
+        estatisticas:
+          type: array
+          items:
+            $ref: "#/components/schemas/EstatisticaDto"
+paths:
+  /servicos/dados-simulacoes:
+    get:
+      summary: Serviço para retornar os valores simulados para cada produto em cada
+        dia
+      description: Utiliza de parametro de data informada na query de requisição(caso
+        não respondida assumirá valores padrão)
+      parameters:
+      - description: Data no formato YYYY-MM-DD
+        schema:
+          type: string
+          pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+        name: dataReferencia
+        in: query
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VolumeDto"
+      tags:
+      - Rotas Hackathon Resource
+  /servicos/listar-simulacoes:
+    get:
+      summary: Serviço para retornar todas as simulações
+      description: Utiliza de paginação para retornar os dados(caso não respondida
+        assumirá valores padrões)
+      parameters:
+      - name: pagina
+        in: query
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          format: int32
+          default: 1
+      - name: qtdRegistrosPagina
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 10
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SimulacoesDto"
+      tags:
+      - Rotas Hackathon Resource
+  /servicos/nova-simulacao:
+    post:
+      summary: Serviço para solicitação de simulação de crédito
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PropostaDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RespostaPropostaDto"
+        "400":
+          description: Bad Request
+      tags:
+      - Rotas Hackathon Resource
+  /servicos/telemetria:
+    get:
+      summary: Serviço para retornar dados de telemetria com volumes e tempos de resposta
+        de cada serviço
+      description: Utiliza de parametro de data informada na query de requisição(caso
+        não respondida assumirá valores padrões)
+      parameters:
+      - description: Data no formato YYYY-MM-DD
+        schema:
+          type: string
+          pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+        name: dataReferencia
+        in: query
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelemetricaPorData"
+      tags:
+      - Rotas Hackathon Resource
+info:
+  title: caixa API
+  version: 1.0-SNAPSHOT

@@ -53,7 +53,7 @@ Isso irá compilar o projeto, executar os testes e gerar o jar.
 No mesmo diretório, execute:
 
 ```bash
-docker-compose up --build
+docker-compose up -d --build
 ```
 
 Isso irá:
@@ -66,8 +66,13 @@ A API estará disponível em http://localhost:8080.
 
 ### 3 Acessando a aplicação
 
-Foi incluido um documento Swagger para testar todas as rotas da aplicação 
+Foi incluído um documento **Swagger** para testar todas as rotas da aplicação.
 
 ```bash
 http://localhost:8080/q/swagger-ui/
 ```
+
+# Observação
+
+Foi adicionado um arquivo também apenas para visualização da documentação em:
+[swagger.yml](doc/swagger.yml).
