@@ -41,7 +41,8 @@ Este projeto tem como objetivo disponibilizar uma API de simulação de emprést
 ### 1. Build do projeto com Maven
 
 No diretório raiz do projeto, execute:
-
+Obs(Foi realizada uma tentativa de build utilizando o Dockerfile, porém, após pesquisas e orientações profissionais, não se mostrou viável , 
+com erro de mapeamento dos documentos locais para a imagem. )
 ```bash
 ./mvnw package -DskipTests
 ```
