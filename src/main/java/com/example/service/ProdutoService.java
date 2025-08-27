@@ -73,6 +73,9 @@ public class ProdutoService {
                 "valorMinimo <= :valor AND (valorMaximo IS NULL OR valorMaximo >= :valor)",
                 Parameters.with("valor", proposta.getValorDesejado())
         ).firstResult();
+        if(produto == null){
+            throw new ApiException("Não há produtos disponíveis que atendam a proposta");
+        }
         if (proposta.getPrazo() < produto.getMinimoMeses() ) {
             String maximoMesesTexto = produto.getMaximoMeses() != null ? String.valueOf(produto.getMaximoMeses()) : "ilimitado";
 

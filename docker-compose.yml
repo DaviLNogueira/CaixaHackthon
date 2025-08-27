@@ -28,7 +28,7 @@ services:
     container_name: quarkus-app
     build:
       context: .
-      dockerfile: src/main/docker/Dockerfile.jvm
+      dockerfile: src/main/docker/Dockerfile
     depends_on:
       - sqlserver
     ports:
